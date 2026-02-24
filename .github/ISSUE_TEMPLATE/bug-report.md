@@ -31,10 +31,11 @@ assignees: ''
 ```
 
 ## 環境情報
-- OS: [例: Windows 11]
-- Browser: [例: Chrome 120.0]
-- Java Version: [例: OpenJDK 17]
-- Spring Boot Version: [例: 3.2.0]
+- OS: [Windows 11]
+-Browser: [Chrome 145.0]
+-Java Version: [OpenJDK 17]
+-Spring Boot Version: [3.2.0]
 
 ## 追加情報
 <!-- その他、関連する情報があれば記載してください -->
+
