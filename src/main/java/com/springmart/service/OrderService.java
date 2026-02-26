@@ -13,6 +13,7 @@ import com.springmart.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,8 @@ public class OrderService {
     private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository, OrderDetailRepository orderDetailRepository,
-                       ProductRepository productRepository, InventoryRepository inventoryRepository,
-                       UserRepository userRepository) {
+            ProductRepository productRepository, InventoryRepository inventoryRepository,
+            UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.productRepository = productRepository;
@@ -36,10 +37,12 @@ public class OrderService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         String username;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
             username = authentication.getName();
         } else {
             username = "user1";
@@ -59,15 +62,13 @@ public class OrderService {
         for (OrderItemRequest itemRequest : request.getItems()) {
             Long productId = itemRequest.getProductId();
             Integer quantity = itemRequest.getQuantity();
-            Inventory inventory = inventoryRepository.findByProductId(productId)
+            Inventory inventory = inventoryRepository.findByIdForUpdate(productId)
                     .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + productId));
 
-
-            if (inventory.getStockQuantity() <= quantity) {
-
-                System.out.println("警告: 在庫が不足していますが、注文を続行します");
+            if (inventory.getStockQuantity() < quantity) {
+                throw new OutOfStockException("在庫が不足しています。商品ID: " + productId
+                        + "（残り: " + inventory.getStockQuantity() + "個、注文数: " + quantity + "個）");
             }
-
 
             inventory.setStockQuantity(inventory.getStockQuantity() - quantity);
             inventoryRepository.save(inventory);
@@ -95,4 +96,3 @@ public class OrderService {
         return new OrderResponse(order.getId(), order.getStatus(), order.getTotalPrice());
     }
 }
-
