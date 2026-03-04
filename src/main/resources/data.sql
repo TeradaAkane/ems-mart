@@ -15,12 +15,12 @@ VALUES
     ('Spring Boot入門', 'Spring Bootの基礎から実践まで学べる入門書', 3000, NOW()),
     ('Docker実践ガイド', 'Dockerを使ったコンテナ開発の実践的なガイド', 3500, NOW()),
     ('React開発集中講座', 'モダンフロントエンド開発の集中講座', 4000, NOW())
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 
 -- 初期在庫データ
 INSERT INTO inventory (product_id, stock_quantity, updated_at)
 SELECT id, 100, NOW()
 FROM products
-WHERE id IN (1, 2, 3)
+WHERE name IN ('Spring Boot入門', 'Docker実践ガイド', 'React開発集中講座')
 ON CONFLICT (product_id) DO NOTHING;
 

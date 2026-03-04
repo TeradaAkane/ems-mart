@@ -39,7 +39,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
+            @Valid @RequestBody ProductRequest request) {
         throw new UnsupportedOperationException("商品更新機能はまだ実装されていません");
     }
 
@@ -48,4 +49,3 @@ public class ProductController {
         throw new UnsupportedOperationException("商品削除機能はまだ実装されていません");
     }
 }
-
