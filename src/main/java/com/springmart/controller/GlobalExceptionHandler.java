@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.springmart.exception.OutOfStockException;
 
+import com.springmart.exception.OutOfStockException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +35,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
-    @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<Map<String, String>> handleUnsupportedOperationException(UnsupportedOperationException ex) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "未実装");
-        errorResponse.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(errorResponse);
-    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
