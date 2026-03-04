@@ -41,11 +41,15 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
             @Valid @RequestBody ProductRequest request) {
-        throw new UnsupportedOperationException("商品更新機能はまだ実装されていません");
+
+        ProductResponse product = productService.updateProduct(id, request);
+        return ResponseEntity.ok(product);
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        throw new UnsupportedOperationException("商品削除機能はまだ実装されていません");
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
