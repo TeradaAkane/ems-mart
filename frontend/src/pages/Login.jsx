@@ -18,15 +18,16 @@ const Login = () => {
       const response = await login(userName, password);
       const token = response.token;
 
-      // ユーザー情報を取得（JWTから推測）
+      // JWTトークンからペイロードをデコードしてロールを取得
+      const payload = JSON.parse(atob(token.split('.')[1]));
       const user = {
         userName: userName,
-        role: userName === 'admin' ? 'ROLE_ADMIN' : 'ROLE_USER'
+        role: payload.role || 'ROLE_USER'
       };
 
       setAuth(token, user);
 
-      // 管理者の場合は管理画面へ、一般ユーザーは顧客画面へ
+      // ロールに基づいて遷移先を決定
       if (user.role === 'ROLE_ADMIN') {
         navigate('/admin');
       } else {
@@ -59,9 +60,10 @@ const Login = () => {
       const response = await login(username, pass);
       const token = response.token;
 
+      const payload = JSON.parse(atob(token.split('.')[1]));
       const user = {
         userName: username,
-        role: username === 'admin' ? 'ROLE_ADMIN' : 'ROLE_USER'
+        role: payload.role || 'ROLE_USER'
       };
 
       setAuth(token, user);
