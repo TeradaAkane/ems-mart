@@ -4,6 +4,7 @@ import com.springmart.dto.OrderItemRequest;
 import com.springmart.dto.OrderRequest;
 import com.springmart.dto.OrderResponse;
 import com.springmart.entity.*;
+import com.springmart.exception.OutOfStockException;
 import com.springmart.repository.InventoryRepository;
 import com.springmart.repository.OrderDetailRepository;
 import com.springmart.repository.OrderRepository;
@@ -17,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
