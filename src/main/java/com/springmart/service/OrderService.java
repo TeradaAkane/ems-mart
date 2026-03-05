@@ -4,7 +4,6 @@ import com.springmart.dto.OrderItemRequest;
 import com.springmart.dto.OrderRequest;
 import com.springmart.dto.OrderResponse;
 import com.springmart.entity.*;
-import com.springmart.exception.OutOfStockException;
 import com.springmart.repository.InventoryRepository;
 import com.springmart.repository.OrderDetailRepository;
 import com.springmart.repository.OrderRepository;
@@ -13,7 +12,12 @@ import com.springmart.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +45,11 @@ public class OrderService {
     public OrderResponse createOrder(OrderRequest request) {
         String username;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
             username = authentication.getName();
         } else {
-            username = "user1";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "ログインが必要です");
         }
 
         User user = userRepository.findByUserName(username)
@@ -61,15 +66,15 @@ public class OrderService {
         for (OrderItemRequest itemRequest : request.getItems()) {
             Long productId = itemRequest.getProductId();
             Integer quantity = itemRequest.getQuantity();
-            Inventory inventory = inventoryRepository.findByProductId(productId)
+            Inventory inventory = inventoryRepository.findByIdForUpdate(productId)
                     .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + productId));
 
 
-            if (inventory.getStockQuantity() <= quantity) {
+            if (inventory.getStockQuantity() < quantity) {
+                throw new OutOfStockException("在庫が不足しています。商品ID: " + productId
+                        + "（残り: " + inventory.getStockQuantity() + "個、注文数: " + quantity + "個）");
 
-                System.out.println("警告: 在庫が不足していますが、注文を続行します");
             }
-
 
             inventory.setStockQuantity(inventory.getStockQuantity() - quantity);
             inventoryRepository.save(inventory);
@@ -97,4 +102,3 @@ public class OrderService {
         return new OrderResponse(order.getId(), order.getStatus(), order.getTotalPrice());
     }
 }
-

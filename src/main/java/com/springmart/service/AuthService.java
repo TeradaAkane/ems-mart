@@ -5,8 +5,10 @@ import com.springmart.dto.LoginResponse;
 import com.springmart.entity.User;
 import com.springmart.repository.UserRepository;
 import com.springmart.security.JwtTokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -23,10 +25,10 @@ public class AuthService {
     
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByUserName(request.getUserName())
-                .orElseThrow(() -> new RuntimeException("ユーザー名またはパスワードが正しくありません"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "ユーザー名またはパスワードが正しくありません"));
         
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("ユーザー名またはパスワードが正しくありません");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "ユーザー名またはパスワードが正しくありません");
         }
         
         String token = jwtTokenProvider.generateToken(user.getUserName(), user.getRole());

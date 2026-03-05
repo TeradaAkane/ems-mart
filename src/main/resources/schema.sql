@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- 商品テーブル
 CREATE TABLE IF NOT EXISTS products (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     price INTEGER NOT NULL,
     version BIGINT NOT NULL DEFAULT 0,
