@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
-    version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL
 );
 
