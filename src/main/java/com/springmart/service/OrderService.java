@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,8 +72,8 @@ public class OrderService {
 
 
             if (inventory.getStockQuantity() < quantity) {
-                throw new OutOfStockException("在庫が不足しています。商品ID: " + productId
-                        + "（残り: " + inventory.getStockQuantity() + "個、注文数: " + quantity + "個）");
+                throw new OutOfStockException("在庫が不足しています。商品名: " + inventory.getProduct().getName()
+                        + "（在庫数: " + inventory.getStockQuantity() + "個、注文数: " + quantity + "個）");
 
             }
 

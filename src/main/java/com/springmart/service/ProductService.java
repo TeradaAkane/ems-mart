@@ -31,14 +31,15 @@ public class ProductService {
 
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(p -> new ProductResponse(p.getId(), p.getName(), p.getDescription(), p.getPrice()))
+                .map(p -> new ProductResponse(p.getId(), p.getName(), p.getDescription(), p.getPrice(), p.getVersion()))
                 .collect(Collectors.toList());
     }
 
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + id));
-        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
+        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice(),
+                product.getVersion());
     }
 
     @Transactional
@@ -56,7 +57,8 @@ public class ProductService {
         inventory.setStockQuantity(request.getInitialStock());
         inventoryRepository.save(inventory);
 
-        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
+        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice(),
+                product.getVersion());
     }
 
     @Transactional
@@ -67,6 +69,7 @@ public class ProductService {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
+        product.setVersion(request.getVersion());
         productRepository.save(product);
 
         if (request.getInitialStock() != null) {
@@ -76,7 +79,8 @@ public class ProductService {
             inventoryRepository.save(inventory);
         }
 
-        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
+        return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice(),
+                product.getVersion());
     }
 
     @Transactional

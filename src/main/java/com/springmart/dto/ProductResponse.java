@@ -10,5 +10,5 @@ public class ProductResponse {
     private String name;
     private String description;
     private Integer price;
+    private Long version;
 }
-
