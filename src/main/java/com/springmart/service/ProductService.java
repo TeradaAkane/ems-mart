@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,10 +67,14 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "商品が見つかりません: " + id));
 
+        // クライアントから送られてきたバージョンと、DBから取得した現在のバージョンを比較
+        if (request.getVersion() != null && !product.getVersion().equals(request.getVersion())) {
+            throw new ObjectOptimisticLockingFailureException(Product.class, id);
+        }
+
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-        product.setVersion(request.getVersion());
         productRepository.save(product);
 
         if (request.getInitialStock() != null) {
