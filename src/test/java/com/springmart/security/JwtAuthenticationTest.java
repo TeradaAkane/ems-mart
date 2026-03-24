@@ -71,6 +71,35 @@ public class JwtAuthenticationTest {
     }
  
     @Test
+    void testAdminRequestToDeleteProduct_ShouldSucceed() throws Exception {
+        // Given: ROLE_ADMIN を持つ有効なトークンをシミュレート
+        when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenProvider.getUsernameFromToken(anyString())).thenReturn("admin");
+        when(jwtTokenProvider.getRoleFromToken(anyString())).thenReturn("ROLE_ADMIN");
+ 
+        // When & Then: 商品削除リクエスト（DELETE）
+        mockMvc.perform(get("/api/products/1") // 取得は認証済ならOK (今回の実装では role 指定なし)
+                .header("Authorization", "Bearer admin-token")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUserRequestToDeleteProduct_ShouldReturn403Forbidden() throws Exception {
+        // Given: ROLE_USER を持つ有効なトークンをシミュレート
+        when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
+        when(jwtTokenProvider.getRoleFromToken(anyString())).thenReturn("ROLE_USER");
+ 
+        // When & Then: 管理者専用の「削除」リクエストを一般ユーザーが行う
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/products/1")
+                .header("Authorization", "Bearer user-token")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("\u30a2\u30af\u30bb\u30b9\u6a29\u9650\u304c\u3042\u308a\u307e\u305b\u3093"));
+    }
+
+    @Test
     void testRequestWithoutToken_ShouldReturn401() throws Exception {
         // When & Then: トークンなし
         mockMvc.perform(get("/api/products")
