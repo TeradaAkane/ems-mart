@@ -61,11 +61,13 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"認証が必要です\"}");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter()
                                     .write("{\"error\": \"Unauthorized\", \"message\": \"認可エラーですが不認証として扱います\"}");
