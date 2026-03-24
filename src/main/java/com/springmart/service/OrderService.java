@@ -63,8 +63,12 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
         int totalPrice = 0;
 
+        // デッドロック防止のため、商品ID順にソートしてロック取得順序を固定する
+        List<OrderItemRequest> sortedItems = new ArrayList<>(request.getItems());
+        sortedItems.sort((a, b) -> a.getProductId().compareTo(b.getProductId()));
+
         // 各商品について在庫確認と引き当て
-        for (OrderItemRequest itemRequest : request.getItems()) {
+        for (OrderItemRequest itemRequest : sortedItems) {
             Long productId = itemRequest.getProductId();
             Integer quantity = itemRequest.getQuantity();
             Inventory inventory = inventoryRepository.findByIdForUpdate(productId)

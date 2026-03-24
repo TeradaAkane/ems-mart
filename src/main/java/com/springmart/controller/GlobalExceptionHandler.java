@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.springmart.exception.OutOfStockException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.dao.CannotAcquireLockException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,14 @@ public class GlobalExceptionHandler {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "同時更新エラー");
         errorResponse.put("message", "他のユーザーによってデータが更新されました。画面をリロードして再度お試しください。");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler({PessimisticLockingFailureException.class, CannotAcquireLockException.class})
+    public ResponseEntity<Map<String, String>> handlePessimisticLockingFailureException(Exception ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "同時更新エラー");
+        errorResponse.put("message", "現在、商品の在庫情報が他の方によって更新されています。しばらく待ってから再度お試しください。");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
