@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
             ObjectOptimisticLockingFailureException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Conflict");
-        errorResponse.put("message", "他のユーザーによってデータが更新されました。画面をリロードして再度お試しください。");
+        errorResponse.put("message", "タッチの差で他の方が更新されたようです。最新の状態を確認するため、一度読み込み直してください。");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handlePessimisticLockingFailureException(Exception ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Conflict");
-        errorResponse.put("message", "現在、商品の在庫情報が他の方によって更新されています。しばらく待ってから再度お試しください。");
+        errorResponse.put("message", "現在、他の方が在庫情報を更新中のようです。恐れ入りますが、少し時間を置いてから再度お試しください。");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 

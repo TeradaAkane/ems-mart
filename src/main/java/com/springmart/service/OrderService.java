@@ -55,7 +55,7 @@ public class OrderService {
         }
 
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("ユーザー情報が確認できませんでした。再度ログインをお試しください。"));
 
         Order order = new Order();
         order.setUser(user);
@@ -77,8 +77,8 @@ public class OrderService {
 
 
             if (inventory.getStockQuantity() < quantity) {
-                throw new OutOfStockException("在庫が不足しています。商品名: " + inventory.getProduct().getName()
-                        + "（在庫数: " + inventory.getStockQuantity() + "個、注文数: " + quantity + "個）");
+                throw new OutOfStockException("申し訳ございません。在庫が足りないため、注文を承れませんでした。商品名: " + inventory.getProduct().getName()
+                        + "（現在の在庫: " + inventory.getStockQuantity() + "個）");
 
             }
 

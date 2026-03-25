@@ -39,7 +39,7 @@ public class ProductService {
 
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")"));
+                .orElseThrow(() -> new ResourceNotFoundException("お探しの商品は見つかりませんでした。削除されたか、IDが正しいかご確認ください。"));
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice(),
                 product.getVersion());
     }
@@ -66,7 +66,7 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")"));
+                .orElseThrow(() -> new ResourceNotFoundException("更新対象の商品が見つかりませんでした。既に削除されている可能性がございます。"));
 
         // クライアントから送られてきたバージョンと、DBから取得した現在のバージョンを比較
         if (request.getVersion() != null && !product.getVersion().equals(request.getVersion())) {
@@ -80,7 +80,7 @@ public class ProductService {
 
         if (request.getInitialStock() != null) {
             Inventory inventory = inventoryRepository.findByProductId(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("在庫データが見つかりません (商品ID: " + id + ")"));
+                    .orElseThrow(() -> new ResourceNotFoundException("在庫データが確認できませんでした。システム管理者にお問い合わせください。"));
             inventory.setStockQuantity(request.getInitialStock());
             inventoryRepository.save(inventory);
         }
@@ -92,7 +92,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")");
+            throw new ResourceNotFoundException("削除対象の商品が見つかりませんでした。");
         }
 
         // 注文履歴があるかチェック（外部キー制約エラーを避けるため）
