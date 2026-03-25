@@ -7,6 +7,7 @@ import com.springmart.entity.Product;
 import com.springmart.repository.InventoryRepository;
 import com.springmart.repository.OrderDetailRepository;
 import com.springmart.repository.ProductRepository;
+import com.springmart.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,7 +39,7 @@ public class ProductService {
 
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")"));
         return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice(),
                 product.getVersion());
     }
@@ -65,7 +66,7 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "商品が見つかりません: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")"));
 
         // クライアントから送られてきたバージョンと、DBから取得した現在のバージョンを比較
         if (request.getVersion() != null && !product.getVersion().equals(request.getVersion())) {
@@ -79,7 +80,7 @@ public class ProductService {
 
         if (request.getInitialStock() != null) {
             Inventory inventory = inventoryRepository.findByProductId(id)
-                    .orElseThrow(() -> new RuntimeException("在庫データが見つかりません: " + id));
+                    .orElseThrow(() -> new ResourceNotFoundException("在庫データが見つかりません (商品ID: " + id + ")"));
             inventory.setStockQuantity(request.getInitialStock());
             inventoryRepository.save(inventory);
         }
@@ -91,7 +92,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "商品が見つかりません: " + id);
+            throw new ResourceNotFoundException("商品が見つかりません (ID: " + id + ")");
         }
 
         // 注文履歴があるかチェック（外部キー制約エラーを避けるため）

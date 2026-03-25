@@ -10,6 +10,7 @@ import com.springmart.repository.OrderDetailRepository;
 import com.springmart.repository.OrderRepository;
 import com.springmart.repository.ProductRepository;
 import com.springmart.repository.UserRepository;
+import com.springmart.exception.ResourceNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class OrderService {
         }
 
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません: " + username));
 
         Order order = new Order();
         order.setUser(user);
@@ -72,7 +73,7 @@ public class OrderService {
             Long productId = itemRequest.getProductId();
             Integer quantity = itemRequest.getQuantity();
             Inventory inventory = inventoryRepository.findByIdForUpdate(productId)
-                    .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + productId));
+                    .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + productId + ")"));
 
 
             if (inventory.getStockQuantity() < quantity) {
@@ -86,7 +87,7 @@ public class OrderService {
 
             // 商品情報取得
             Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new RuntimeException("商品が見つかりません: " + productId));
+                    .orElseThrow(() -> new ResourceNotFoundException("商品が見つかりません (ID: " + productId + ")"));
 
             // 注文明細作成
             OrderDetail orderDetail = new OrderDetail();
