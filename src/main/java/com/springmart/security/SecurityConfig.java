@@ -67,14 +67,14 @@ public class SecurityConfig {
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"認証が必要です\"}");
+                            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"恐れ入りますが、再度ログインをお願いいたします。\"}");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.getWriter()
-                                    .write("{\"error\": \"Forbidden\", \"message\": \"アクセス権限がありません\"}");
+                                    .write("{\"error\": \"Forbidden\", \"message\": \"申し訳ありませんが、この操作を行う権限をお持ちではないようです。\"}");
                         }))
                 .addFilterBefore(jwtAuthenticationFilter(),
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);

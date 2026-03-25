@@ -46,7 +46,7 @@ public class JwtAuthenticationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value("Unauthorized"))
-                .andExpect(jsonPath("$.message").value("\u8a8d\u8a3c\u304c\u5fc5\u8981\u3067\u3059"));
+                .andExpect(jsonPath("$.message").value("\u6050\u308c\u5165\u308a\u307e\u3059\u304c\u3001\u518d\u5ea6\u30ed\u30b0\u30a4\u30f3\u3092\u304a\u9858\u3044\u3044\u305f\u3057\u307e\u3059\u3002"));
     }
  
     @Test
@@ -58,7 +58,8 @@ public class JwtAuthenticationTest {
         mockMvc.perform(get("/api/products")
                 .header("Authorization", "Bearer invalid-signature-token")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("\u6050\u308c\u5165\u308a\u307e\u3059\u304c\u3001\u518d\u5ea6\u30ed\u30b0\u30a4\u30f3\u3092\u304a\u9858\u3044\u3044\u305f\u3057\u307e\u3059\u3002"));
     }
  
     @Test
@@ -67,7 +68,8 @@ public class JwtAuthenticationTest {
         mockMvc.perform(get("/api/products")
                 .header("Authorization", "invalid-format-token")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("\u6050\u308c\u5165\u308a\u307e\u3059\u304c\u3001\u518d\u5ea6\u30ed\u30b0\u30a4\u30f3\u3092\u304a\u9858\u3044\u3044\u305f\u3057\u307e\u3059\u3002"));
     }
  
     @Test
@@ -96,7 +98,7 @@ public class JwtAuthenticationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error").value("Forbidden"))
-                .andExpect(jsonPath("$.message").value("\u30a2\u30af\u30bb\u30b9\u6a29\u9650\u304c\u3042\u308a\u307e\u305b\u3093"));
+                .andExpect(jsonPath("$.message").value("\u7533\u3057\u8a33\u3042\u308a\u307e\u305b\u3093\u304c\u3001\u3053\u306e\u64cd\u4f5c\u3092\u884c\u3046\u6a29\u9650\u3092\u304a\u6301\u3061\u3067\u306f\u306a\u3044\u3088\u3046\u3067\u3059\u3002"));
     }
 
     @Test
@@ -104,6 +106,7 @@ public class JwtAuthenticationTest {
         // When & Then: トークンなし
         mockMvc.perform(get("/api/products")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("\u6050\u308c\u5165\u308a\u307e\u3059\u304c\u3001\u518d\u5ea6\u30ed\u30b0\u30a4\u30f3\u3092\u304a\u9858\u3044\u3044\u305f\u3057\u307e\u3059\u3002"));
     }
 }
